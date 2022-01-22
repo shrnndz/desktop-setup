@@ -17,3 +17,7 @@
         dest: /home/shernandez
         owner: shernandez
         group: shernandez
+    - name: Clone oh-my-zsh
+      git:
+        repo: https://github.com/ohmyzsh/ohmyzsh.git
+        dest: /home/shernandez/.oh-my-zsh
