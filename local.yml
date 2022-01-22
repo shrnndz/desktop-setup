@@ -14,4 +14,6 @@
     - name: Copy Configs
       copy:
         src: configs/
-        dest: ~/
+        dest: /home/shernandez
+        owner: shernandez
+        group: shernandez
