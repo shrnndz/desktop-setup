@@ -1,10 +1,10 @@
 ---
 - hosts: localhost
   connection: local
-  become: true
 
   tasks:
     - name: Install CLI Tools
+      become: true
       package:
         name:
           - bat
@@ -12,14 +12,14 @@
           - vim
           - zsh
     - name: Copy Configs
+      become: true
+      become_user: shernandez
       copy:
         src: configs/
-        dest: /home/shernandez
-        owner: shernandez
-        group: shernandez
+        dest: ~/
     - name: Clone oh-my-zsh
+      become: true
+      become_user: shernandez
       git:
         repo: https://github.com/ohmyzsh/ohmyzsh.git
-        dest: /home/shernandez/.oh-my-zsh
-        owner: shernandez
-        group: shernandez
+        dest: ~/.oh-my-zsh
