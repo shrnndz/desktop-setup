@@ -12,14 +12,10 @@
           - vim
           - zsh
     - name: Copy Configs
-      become: true
-      become_user: shernandez
       copy:
         src: configs/
         dest: ~/
     - name: Clone oh-my-zsh
-      become: true
-      become_user: shernandez
       git:
         repo: https://github.com/ohmyzsh/ohmyzsh.git
         dest: ~/.oh-my-zsh
