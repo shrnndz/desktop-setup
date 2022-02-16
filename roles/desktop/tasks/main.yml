@@ -6,13 +6,14 @@
     state: present 
   loop:
     - 'https://packages.microsoft.com/keys/microsoft.asc'
+    - 'https://rpm.releases.hashicorp.com/gpg'
       
 - name: Add Repositories
   become: true
   ansible.builtin.copy:
     src: 'repos/'
     dest: '/etc/yum.repos.d/'
-    
+
 - name: Add Flathub
   become: true
   community.general.flatpak_remote:
@@ -35,6 +36,14 @@
       - podman-compose
     state: 'present'
 
+- name: Enable and Start Services
+  become: true
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: true
+  loop:
+    - podman
+
 - name: Install Flatpaks
   community.general.flatpak:
     name:
@@ -43,7 +52,8 @@
 
 - name: Install VS Code Extensions
   ansible.builtin.command:
-    cmd: 'code --install-extension {{ item }} --force'
+    cmd: 'code --install-extension {{ item }}'
+    creates: '~/.vscode/extensions/{{ item }}*'
   loop:
     - ms-dotnettools.csharp
     - ms-python.python
@@ -51,7 +61,7 @@
     - ms-toolsai.jupyter
     - ms-toolsai.jupyter-keymap
     - ms-toolsai.jupyter-renderers
-    - PKief.material-icon-theme
+    - pkief.material-icon-theme
     - redhat.ansible
     - redhat.vscode-yaml
     - vscodevim.vim
