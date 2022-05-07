@@ -1,5 +1,5 @@
 ---
-- name: Add GPG Keys
+- name: Add GPG Keys for Fedora
   become: true
   ansible.builtin.rpm_key:
     key: "{{ item }}"
@@ -7,12 +7,33 @@
   loop:
     - 'https://packages.microsoft.com/keys/microsoft.asc'
     - 'https://rpm.releases.hashicorp.com/gpg'
-      
+  when: ansible_facts['distribution'] == "Fedora"
+
+- name: Add GPG Keys for Ubuntu
+  become: true
+  ansible.builtin.apt_key:
+    url: "{{ item }}"
+    state: present
+  loop:
+    - 'https://packages.microsoft.com/keys/microsoft.asc'
+    - 'https://apt.releases.hashicorp.com/gpg'
+  when: ansible_facts['distribution'] == "Ubuntu"
+
 - name: Add Repositories
   become: true
   ansible.builtin.copy:
     src: 'repos/'
     dest: '/etc/yum.repos.d/'
+  when: ansible_facts['distribution'] == "Fedora"
+
+- name: Add Ubuntu Repositories
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "{{ item }}"
+  loop: 
+    - 'deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_lsb.codename }} main'
+  when: ansible_facts['distribution'] == "Ubuntu"
+  notify: updateAptCache
 
 - name: Add Flathub
   become: true
@@ -20,6 +41,7 @@
     name: flathub
     flatpakrepo_url: 'https://flathub.org/repo/flathub.flatpakrepo'
     state: present
+  when: ansible_facts['distribution'] == "Fedora"
 
 - name: Install Tools
   become: true
@@ -29,12 +51,29 @@
       - tmux
       - vim
       - zsh
-      - powerline-fonts
       - code
       - terraform
+    state: 'present'
+
+- name: Install Ubuntu Tools
+  become: true
+  package:
+    name:
+      - fonts-powerline
+      - docker
+      - docker-compose
+    state: 'present'
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Install Fedora Tools
+  become: true
+  package:
+    name:
+      - powerline-fonts
       - podman
       - podman-compose
     state: 'present'
+  when: ansible_facts['distribution'] == "Fedora"
 
 - name: Enable and Start Services
   become: true
@@ -43,18 +82,39 @@
     enabled: true
   loop:
     - podman
+  when: ansible_facts['distribution'] == "Fedora"
+
+- name: Enable and Start Services
+  become: true
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: true
+  loop:
+    - docker
+  when: ansible_facts['distribution'] == "Ubuntu"
 
 - name: Install Flatpaks
   community.general.flatpak:
     name:
       - com.getpostman.Postman
     state: present
+  when: ansible_facts['distribution'] == "Fedora"
+
+- name: Install Snaps
+  community.general.snap:
+    name:
+      - postman
+    state: present
+  when: ansible_facts['distribution'] == "Ubuntu"
 
 - name: Install VS Code Extensions
+  become: false
   ansible.builtin.command:
     cmd: 'code --install-extension {{ item }}'
     creates: '~/.vscode/extensions/{{ item }}*'
   loop:
+    - ms-azuretools.vscode-docker
+    - ms-azuretools.vscode-azurefunctions
     - ms-dotnettools.csharp
     - ms-python.python
     - ms-python.vscode-pylance
@@ -66,13 +126,16 @@
     - redhat.vscode-yaml
     - vscodevim.vim
     - zhuangtongfa.material-theme
+  when: ansible_facts['distribution'] == "Ubuntu"
 
 - name: Copy Configs
+  become: false
   copy:
     src: configs/
     dest: ~/
 
 - name: Clone oh-my-zsh
+  become: false
   git:
     repo: https://github.com/ohmyzsh/ohmyzsh.git
     dest: ~/.oh-my-zsh
