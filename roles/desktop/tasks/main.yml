@@ -53,6 +53,7 @@
       - zsh
       - code
       - terraform
+      - latte-dock
     state: 'present'
 
 - name: Install Ubuntu Tools
@@ -101,9 +102,11 @@
   when: ansible_facts['distribution'] == "Fedora"
 
 - name: Install Snaps
+  become: true
   community.general.snap:
     name:
       - postman
+      - slack
     state: present
   when: ansible_facts['distribution'] == "Ubuntu"
 
@@ -115,6 +118,7 @@
   loop:
     - ms-azuretools.vscode-docker
     - ms-azuretools.vscode-azurefunctions
+    - ms-azuretools.vscode-cosmosdb
     - ms-dotnettools.csharp
     - ms-python.python
     - ms-python.vscode-pylance
@@ -140,8 +144,22 @@
     repo: https://github.com/ohmyzsh/ohmyzsh.git
     dest: ~/.oh-my-zsh
     
-- name: Change Shell
+- name: Modify User Account
   become: true
   ansible.builtin.user:
     name: "{{ ansible_user_id }}"
+    groups:
+      - docker
+    append: yes
     shell: /bin/zsh
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Modify User Account
+  become: true
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    groups:
+      - wheel
+    append: yes
+    shell: /bin/zsh
+  when: ansible_facts['distribution'] == "Fedora"
