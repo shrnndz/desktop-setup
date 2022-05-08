@@ -32,6 +32,7 @@
     repo: "{{ item }}"
   loop: 
     - 'deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_lsb.codename }} main'
+    - 'deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-{{ ansible_lsb.codename }}-prod {{ ansible_lsb.codename }} main'
   when: ansible_facts['distribution'] == "Ubuntu"
   notify: updateAptCache
 
@@ -63,6 +64,7 @@
       - fonts-powerline
       - docker
       - docker-compose
+      - azure-functions-core-tools-4
     state: 'present'
   when: ansible_facts['distribution'] == "Ubuntu"
 
