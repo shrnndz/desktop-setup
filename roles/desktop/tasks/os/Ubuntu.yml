@@ -1,0 +1,107 @@
+---
+- name: Add GPG Keys for Ubuntu
+  become: true
+  ansible.builtin.apt_key:
+    url: "{{ item }}"
+    state: present
+  loop:
+    - 'https://packages.microsoft.com/keys/microsoft.asc'
+    - 'https://apt.releases.hashicorp.com/gpg'
+
+- name: Add Ubuntu Repositories
+  become: true
+  ansible.builtin.apt_repository:
+    repo: "{{ item }}"
+  loop:
+    - 'deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_lsb.codename }} main'
+    - 'deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-{{ ansible_lsb.codename }}-prod {{ ansible_lsb.codename }} main'
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Update Apt Cache
+  become: true
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: Install Tools
+  become: true
+  package:
+    name:
+      - bat
+      - tmux
+      - vim
+      - zsh
+      - code
+      - terraform
+      - latte-dock
+      - fonts-powerline
+      - docker
+      - docker-compose
+      - azure-functions-core-tools-4
+      - python3
+      - python-is-python3
+      - pip
+      - ansible
+    state: 'present'
+  
+- name: Install Python Packages
+  ansible.builtin.pip:
+    name:
+      - ansible-lint
+
+- name: Enable and Start Services
+  become: true
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: true
+  loop:
+    - docker
+
+- name: Install Snaps
+  become: true
+  community.general.snap:
+    name:
+      - postman
+      - slack
+    state: present
+
+- name: Install VS Code Extensions
+  become: false
+  ansible.builtin.command:
+    cmd: 'code --install-extension {{ item }}'
+    creates: '~/.vscode/extensions/{{ item }}*'
+  loop:
+    - ms-azuretools.vscode-docker
+    - ms-azuretools.vscode-azurefunctions
+    - ms-azuretools.vscode-cosmosdb
+    - ms-dotnettools.csharp
+    - ms-python.python
+    - ms-python.vscode-pylance
+    - ms-toolsai.jupyter
+    - ms-toolsai.jupyter-keymap
+    - ms-toolsai.jupyter-renderers
+    - pkief.material-icon-theme
+    - redhat.ansible
+    - redhat.vscode-yaml
+    - vscodevim.vim
+    - zhuangtongfa.material-theme
+
+- name: Copy Configs
+  become: false
+  copy:
+    src: configs/
+    dest: ~/
+
+- name: Clone oh-my-zsh
+  become: false
+  git:
+    repo: https://github.com/ohmyzsh/ohmyzsh.git
+    dest: ~/.oh-my-zsh
+
+- name: Modify User Account
+  become: true
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    groups:
+      - docker
+    append: yes
+    shell: /bin/zsh

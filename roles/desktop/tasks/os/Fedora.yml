@@ -1,0 +1,103 @@
+---
+- name: Add GPG Keys for Fedora
+  become: true
+  ansible.builtin.rpm_key:
+    key: "{{ item }}"
+    state: present
+  loop:
+    - 'https://packages.microsoft.com/keys/microsoft.asc'
+    - 'https://rpm.releases.hashicorp.com/gpg'
+
+- name: Add Repositories
+  become: true
+  ansible.builtin.copy:
+    src: 'repos/'
+    dest: '/etc/yum.repos.d/'
+
+- name: Add Flathub
+  become: true
+  community.general.flatpak_remote:
+    name: flathub
+    flatpakrepo_url: 'https://flathub.org/repo/flathub.flatpakrepo'
+    state: present
+
+- name: Install Tools
+  become: true
+  package:
+    name:
+      - bat
+      - tmux
+      - vim
+      - zsh
+      - code
+      - terraform
+      - latte-dock
+      - powerline-fonts
+      - podman
+      - podman-compose
+      - python3
+      - python-is-python3
+      - pip
+      - ansible
+    state: 'present'
+
+- name: Install Python Packages
+  ansible.builtin.pip:
+    name:
+      - ansible-lint
+
+- name: Enable and Start Services
+  become: true
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    enabled: true
+  loop:
+    - podman
+
+- name: Install Flatpaks
+  community.general.flatpak:
+    name:
+      - com.getpostman.Postman
+    state: present
+
+- name: Install VS Code Extensions
+  become: false
+  ansible.builtin.command:
+    cmd: 'code --install-extension {{ item }}'
+    creates: '~/.vscode/extensions/{{ item }}*'
+  loop:
+    - ms-azuretools.vscode-docker
+    - ms-azuretools.vscode-azurefunctions
+    - ms-azuretools.vscode-cosmosdb
+    - ms-dotnettools.csharp
+    - ms-python.python
+    - ms-python.vscode-pylance
+    - ms-toolsai.jupyter
+    - ms-toolsai.jupyter-keymap
+    - ms-toolsai.jupyter-renderers
+    - pkief.material-icon-theme
+    - redhat.ansible
+    - redhat.vscode-yaml
+    - vscodevim.vim
+    - zhuangtongfa.material-theme
+
+- name: Copy Configs
+  become: false
+  copy:
+    src: configs/
+    dest: ~/
+
+- name: Clone oh-my-zsh
+  become: false
+  git:
+    repo: https://github.com/ohmyzsh/ohmyzsh.git
+    dest: ~/.oh-my-zsh
+
+- name: Modify User Account
+  become: true
+  ansible.builtin.user:
+    name: "{{ ansible_user_id }}"
+    groups:
+      - wheel
+    append: yes
+    shell: /bin/zsh
