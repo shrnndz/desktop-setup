@@ -20,11 +20,11 @@
 - name: Update Apt Cache
   become: true
   ansible.builtin.apt:
-    update_cache: yes
+    update_cache: true
 
 - name: Install Tools
   become: true
-  package:
+  ansible.builtin.package:
     name:
       - bat
       - tmux
@@ -42,7 +42,7 @@
       - pip
       - ansible
     state: 'present'
-  
+
 - name: Install Python Packages
   ansible.builtin.pip:
     name:
@@ -87,15 +87,17 @@
 
 - name: Copy Configs
   become: false
-  copy:
+  ansible.builtin.copy:
     src: configs/
     dest: ~/
+    mode: 0664
 
 - name: Clone oh-my-zsh
   become: false
-  git:
+  ansible.builtin.git:
     repo: https://github.com/ohmyzsh/ohmyzsh.git
     dest: ~/.oh-my-zsh
+    version: master
 
 - name: Modify User Account
   become: true
@@ -103,5 +105,5 @@
     name: "{{ ansible_user_id }}"
     groups:
       - docker
-    append: yes
+    append: true
     shell: /bin/zsh
