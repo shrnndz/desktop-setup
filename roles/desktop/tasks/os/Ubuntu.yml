@@ -12,11 +12,14 @@
   become: true
   ansible.builtin.apt_repository:
     repo: "{{ item }}"
+    state: present
+    filename: microsoft-prod
   loop:
     - 'deb [arch=amd64] https://apt.releases.hashicorp.com {{ ansible_lsb.codename }} main'
     - 'deb [arch=amd64] https://packages.microsoft.com/repos/microsoft-ubuntu-{{ ansible_lsb.codename }}-prod {{ ansible_lsb.codename }} main'
     - 'deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main'
-    - 'deb [arch=amd64] https://packages.microsoft.com/{{ ansible_distribution | lower }}/{{ ansible_distribution_version }}/prod {{ ansible_lsb.codename }} main'
+    - 'deb [arch=amd64] https://packages.microsoft.com/{{ ansible_distribution | lower }}/{{ ansible_distribution_version }}/prod 
+      {{ ansible_lsb.codename }} main'
   when: ansible_facts['distribution'] == "Ubuntu"
 
 - name: Install Tools
