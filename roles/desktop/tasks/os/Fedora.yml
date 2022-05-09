@@ -108,6 +108,5 @@
     groups:
       - wheel
       - libvirt
-      - libvirt-qemu
     append: true
     shell: /bin/zsh
