@@ -44,7 +44,6 @@
       - python3
       - python-is-python3
       - pip
-      - ansible
       - virt-manager
     state: 'present'
 
