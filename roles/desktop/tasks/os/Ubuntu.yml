@@ -26,6 +26,7 @@
   become: true
   ansible.builtin.package:
     name:
+      - git
       - bat
       - tmux
       - vim
@@ -41,6 +42,7 @@
       - python-is-python3
       - pip
       - ansible
+      - virt-manager
     state: 'present'
 
 - name: Install Python Packages
@@ -53,8 +55,10 @@
   ansible.builtin.systemd:
     name: '{{ item }}'
     enabled: true
+    state: started
   loop:
     - docker
+    - libvirtd
 
 - name: Install Snaps
   become: true
@@ -105,5 +109,7 @@
     name: "{{ ansible_user_id }}"
     groups:
       - docker
+      - libvirt
+      - libvirt-qemu
     append: true
     shell: /bin/zsh

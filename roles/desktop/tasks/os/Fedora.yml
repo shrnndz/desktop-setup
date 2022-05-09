@@ -13,6 +13,7 @@
   ansible.builtin.copy:
     src: 'repos/'
     dest: '/etc/yum.repos.d/'
+    mode: 0664
 
 - name: Add Flathub
   become: true
@@ -23,8 +24,9 @@
 
 - name: Install Tools
   become: true
-  package:
+  ansible.builtin.package:
     name:
+      - git
       - bat
       - tmux
       - vim
@@ -39,6 +41,7 @@
       - python-is-python3
       - pip
       - ansible
+      - virt-manager
     state: 'present'
 
 - name: Install Python Packages
@@ -51,8 +54,10 @@
   ansible.builtin.systemd:
     name: '{{ item }}'
     enabled: true
+    state: started
   loop:
     - podman
+    - libvirtd
 
 - name: Install Flatpaks
   community.general.flatpak:
@@ -83,15 +88,17 @@
 
 - name: Copy Configs
   become: false
-  copy:
+  ansible.builtin.copy:
     src: configs/
     dest: ~/
+    mode: 0664
 
 - name: Clone oh-my-zsh
   become: false
-  git:
+  ansible.builtin.git:
     repo: https://github.com/ohmyzsh/ohmyzsh.git
     dest: ~/.oh-my-zsh
+    version: master
 
 - name: Modify User Account
   become: true
@@ -99,5 +106,7 @@
     name: "{{ ansible_user_id }}"
     groups:
       - wheel
-    append: yes
+      - libvirt
+      - libvirt-qemu
+    append: true
     shell: /bin/zsh
