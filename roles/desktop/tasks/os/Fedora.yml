@@ -32,6 +32,8 @@
       - vim
       - zsh
       - code
+      - dotnet-sdk-3.1
+      - dotnet-sdk-6.0
       - terraform
       - latte-dock
       - powerline-fonts
