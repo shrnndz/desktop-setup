@@ -32,23 +32,16 @@
       - vim
       - zsh
       - code
-      - dotnet-sdk-3.1
       - dotnet-sdk-6.0
       - terraform
       - latte-dock
       - powerline-fonts
       - podman
-      - podman-compose
       - python3
       - python-is-python3
       - pip
       - virt-manager
     state: 'present'
-
-- name: Install Python Packages
-  ansible.builtin.pip:
-    name:
-      - ansible-lint
 
 - name: Enable and Start Services
   become: true
@@ -65,41 +58,6 @@
     name:
       - com.getpostman.Postman
     state: present
-
-- name: Install VS Code Extensions
-  become: false
-  ansible.builtin.command:
-    cmd: 'code --install-extension {{ item }}'
-    creates: '~/.vscode/extensions/{{ item }}*'
-  loop:
-    - ms-azuretools.vscode-docker
-    - ms-azuretools.vscode-azurefunctions
-    - ms-azuretools.vscode-cosmosdb
-    - ms-dotnettools.csharp
-    - ms-python.python
-    - ms-python.vscode-pylance
-    - ms-toolsai.jupyter
-    - ms-toolsai.jupyter-keymap
-    - ms-toolsai.jupyter-renderers
-    - pkief.material-icon-theme
-    - redhat.ansible
-    - redhat.vscode-yaml
-    - vscodevim.vim
-    - zhuangtongfa.material-theme
-
-- name: Copy Configs
-  become: false
-  ansible.builtin.copy:
-    src: configs/
-    dest: ~/
-    mode: 0664
-
-- name: Clone oh-my-zsh
-  become: false
-  ansible.builtin.git:
-    repo: https://github.com/ohmyzsh/ohmyzsh.git
-    dest: ~/.oh-my-zsh
-    version: master
 
 - name: Modify User Account
   become: true
