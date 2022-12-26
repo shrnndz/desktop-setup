@@ -45,6 +45,7 @@
     - redhat.vscode-yaml
     - vscodevim.vim
     - zhuangtongfa.material-theme
+    - hashicorp.terraform
 
 - name: Copy Configs
   become: false
