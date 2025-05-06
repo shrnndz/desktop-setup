@@ -10,6 +10,29 @@
     "editor.fontFamily": "'Droid Sans Mono', 'monospace', monospace, 'Droid Sans Fallback', PowerlineSymbols, 'PowerlineSymbols'",
     "workbench.colorTheme": "One Dark Pro Darker",
     "files.associations": {
-        "*.yml": "ansible"
-    }
+        "*.yml": "ansible",
+        "*.bu": "yaml",
+        "*.ign": "json",
+        "*.conf": "json"
+    },
+    "debug.onTaskErrors": "showErrors",
+    "editor.rulers": [
+        {
+            "color": "#990099",
+            "column": 160
+        }
+    ],
+    "explorer.confirmDelete": false,
+    "terminal.integrated.defaultProfile.linux": "zsh",
+    "security.workspace.trust.untrustedFiles": "open",
+    "vim.handleKeys": {
+
+        "<C-p>": false,
+        "<C-d>": true,
+        "<C-s>": false,
+        "<C-z>": false
+    },
+    "diffEditor.ignoreTrimWhitespace": false,
+    "git.blame.editorDecoration.enabled": true,
+    "git.blame.statusBarItem.enabled": true,
 }    

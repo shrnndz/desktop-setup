@@ -70,15 +70,16 @@ DEFAULT_USER="shernandez"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
+plugins=(git dotnet kubectl helm)
 
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
-path+=('/home/shernandez/.local/bin')
-export PATH
-
 # export MANPATH="/usr/local/man:$MANPATH"
+
+export EDITOR='code'
+export KUBE_EDITOR='code -w'
+export PATH="$HOME/.local/bin:$PATH"
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
@@ -101,6 +102,5 @@ export PATH
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias tf="terraform"
-alias tfi="terraform init"
-alias tfp="terraform plan"
+
+source <(talosctl completion zsh)

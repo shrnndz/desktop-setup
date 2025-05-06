@@ -6,7 +6,6 @@
     state: present
   loop:
     - 'https://packages.microsoft.com/keys/microsoft.asc'
-    - 'https://rpm.releases.hashicorp.com/gpg'
 
 - name: Add Repositories
   become: true
@@ -14,13 +13,6 @@
     src: 'repos/'
     dest: '/etc/yum.repos.d/'
     mode: 0664
-
-- name: Add Flathub
-  become: true
-  community.general.flatpak_remote:
-    name: flathub
-    flatpakrepo_url: 'https://flathub.org/repo/flathub.flatpakrepo'
-    state: present
 
 - name: Install Tools
   become: true
@@ -32,32 +24,10 @@
       - vim
       - zsh
       - code
-      - dotnet-sdk-6.0
-      - terraform
-      - latte-dock
       - powerline-fonts
       - podman
-      - python3
-      - python-is-python3
-      - pip
       - virt-manager
     state: 'present'
-
-- name: Enable and Start Services
-  become: true
-  ansible.builtin.systemd:
-    name: '{{ item }}'
-    enabled: true
-    state: started
-  loop:
-    - podman
-    - libvirtd
-
-- name: Install Flatpaks
-  community.general.flatpak:
-    name:
-      - com.getpostman.Postman
-    state: present
 
 - name: Modify User Account
   become: true

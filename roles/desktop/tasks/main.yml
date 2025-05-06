@@ -17,13 +17,6 @@
     loop_var: tasks
   when: ansible_facts['distribution'] == "Fedora"
 
-- name: Install Python Packages
-  ansible.builtin.pip:
-    name:
-      - ansible-lint
-      - pytest
-      - podman-compose
-
 - name: Install VS Code Extensions
   become: false
   ansible.builtin.command:
@@ -31,17 +24,10 @@
     creates: '~/.vscode/extensions/{{ item }}*'
   loop:
     - ms-vscode.cpptools-extension-pack
-    - ms-azuretools.vscode-docker
-    - ms-azuretools.vscode-azurefunctions
-    - ms-azuretools.vscode-cosmosdb
     - ms-dotnettools.csharp
     - ms-python.python
     - ms-python.vscode-pylance
-    - ms-toolsai.jupyter
-    - ms-toolsai.jupyter-keymap
-    - ms-toolsai.jupyter-renderers
     - pkief.material-icon-theme
-    - redhat.ansible
     - redhat.vscode-yaml
     - vscodevim.vim
     - zhuangtongfa.material-theme
